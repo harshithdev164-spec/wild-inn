@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-serif: "Playfair Display", Georgia, Cambria, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  
+  --color-sand: #FAF7F2;
+  --color-charcoal: #1A1A1A;
+  --color-terracotta: #C1673A;
+  --color-gold: #C9A15A;
+  --color-warm-gray: #7A7268;
+}
+
+/* Global transitions and scroll behavior */
+html {
+  scroll-behavior: smooth;
+  background-color: var(--color-sand);
+  color: var(--color-charcoal);
+  font-family: var(--font-sans);
+}
+
+body {
+  background-color: var(--color-sand);
+  overflow-x: hidden;
+}
+
+/* Custom styles for layout snap etc */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

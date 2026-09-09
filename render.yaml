@@ -1,0 +1,27 @@
+# Render Blueprint — deploys the whole app (static site + API) from serve.js.
+# 1. Push this repo to GitHub.
+# 2. Render dashboard -> New -> Blueprint -> pick the repo.
+# 3. Fill in the 4 secret env vars when prompted (they are marked sync:false).
+# 4. Deploy. The site + /api/* are served from the same URL.
+
+services:
+  - type: web
+    name: wild-inn
+    runtime: node
+    plan: free            # free tier cold-starts after ~15 min idle; upgrade to "starter" to keep it warm
+    region: singapore     # closest Render region to India
+    buildCommand: npm install && npm run build
+    startCommand: npm run serve
+    healthCheckPath: /api/reels
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "22.18.0"
+      - key: DATABASE_URL
+        sync: false        # Neon pooled connection string
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: ADMIN_PASSCODE
+        sync: false

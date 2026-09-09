@@ -1,0 +1,6 @@
+{
+  "name": "Wild Inn",
+  "description": "Luxury wildlife safaris in South India, exploring Kabini's storied backwaters and Sathyamangalam's untouched forests.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

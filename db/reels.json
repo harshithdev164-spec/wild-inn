@@ -1,0 +1,80 @@
+[
+  {
+    "id": "reel-5",
+    "title": "Tiger on the move",
+    "tour_slug": "bandipur",
+    "location": "Bandipur, Karnataka",
+    "description": "A tiger crosses the track, and a pack of dhole settles on the warm tarmac.",
+    "video_url": "/reels/reel-5.mp4",
+    "poster_url": "/reels/reel-5.webp",
+    "duration_sec": 41,
+    "aspect_ratio": "9:16",
+    "sort_order": 10,
+    "published": true
+  },
+  {
+    "id": "reel-2",
+    "title": "Elephants in the teak",
+    "tour_slug": "kabini",
+    "location": "Kabini, Karnataka",
+    "description": "A herd feeding through the forest, and a giant squirrel overhead.",
+    "video_url": "/reels/reel-2.mp4",
+    "poster_url": "/reels/reel-2.webp",
+    "duration_sec": 13,
+    "aspect_ratio": "9:16",
+    "sort_order": 20,
+    "published": true
+  },
+  {
+    "id": "reel-4",
+    "title": "Periyar Tiger Reserve",
+    "tour_slug": "periyar",
+    "location": "Periyar, Kerala",
+    "description": "Gaur in the grassland, a tiger on the forest road — a morning in Periyar.",
+    "video_url": "/reels/reel-4.mp4",
+    "poster_url": "/reels/reel-4.webp",
+    "duration_sec": 26,
+    "aspect_ratio": "9:16",
+    "sort_order": 30,
+    "published": true
+  },
+  {
+    "id": "reel-1",
+    "title": "Inside the wild at Kabini",
+    "tour_slug": "kabini",
+    "location": "Kabini, Karnataka",
+    "description": "The lodge, the forest, and dhole on the hunt — a day with Wild Inn.",
+    "video_url": "/reels/reel-1.mp4",
+    "poster_url": "/reels/reel-1.webp",
+    "duration_sec": 36,
+    "aspect_ratio": "9:16",
+    "sort_order": 40,
+    "published": true
+  },
+  {
+    "id": "reel-3",
+    "title": "POV: your wildlife escape",
+    "tour_slug": "kabini",
+    "location": "Kabini, Karnataka",
+    "description": "You booked the trip. This is what the next few days look like.",
+    "video_url": "/reels/reel-3.mp4",
+    "poster_url": "/reels/reel-3.webp",
+    "duration_sec": 24,
+    "aspect_ratio": "9:16",
+    "sort_order": 50,
+    "published": true
+  },
+  {
+    "id": "reel-6",
+    "title": "A jungle stay at Kabini",
+    "tour_slug": "kabini",
+    "location": "Kabini, Karnataka",
+    "description": "A walk through the rooms and the reserve, with Nagadharshan.",
+    "video_url": "/reels/reel-6.mp4",
+    "poster_url": "/reels/reel-6.webp",
+    "duration_sec": 51,
+    "aspect_ratio": "9:16",
+    "sort_order": 60,
+    "published": true
+  }
+]

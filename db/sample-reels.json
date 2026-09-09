@@ -1,0 +1,41 @@
+[
+  {
+    "id": "sample-kabini",
+    "title": "Dawn on the backwaters",
+    "tour_slug": "kabini",
+    "location": "Kabini, Karnataka",
+    "description": "First light on the Kabini backwaters, and the forest starts to move.",
+    "video_url": "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+    "poster_url": "https://raw.githubusercontent.com/Yashwanth-MV/Wild-Inn/main/pexels-leon-aschemann-734730704-27834738.jpg",
+    "duration_sec": 30,
+    "aspect_ratio": "9:16",
+    "sort_order": 10,
+    "published": true
+  },
+  {
+    "id": "sample-bandipur",
+    "title": "Tuskers at the treeline",
+    "tour_slug": "bandipur",
+    "location": "Bandipur, Karnataka",
+    "description": "A herd crosses the fire line at dusk in Bandipur.",
+    "video_url": "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+    "poster_url": "https://raw.githubusercontent.com/Yashwanth-MV/Wild-Inn/main/pexels-lorenzo-boldorini-134457203-29707600.jpg",
+    "duration_sec": 30,
+    "aspect_ratio": "9:16",
+    "sort_order": 20,
+    "published": true
+  },
+  {
+    "id": "sample-masinagudi",
+    "title": "The road into Masinagudi",
+    "tour_slug": null,
+    "location": "Masinagudi, Tamil Nadu",
+    "description": "Nilgiri foothills at golden hour.",
+    "video_url": "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+    "poster_url": "https://raw.githubusercontent.com/Yashwanth-MV/Wild-Inn/main/pexels-samirusandeepa-38147409.jpg",
+    "duration_sec": 30,
+    "aspect_ratio": "9:16",
+    "sort_order": 30,
+    "published": true
+  }
+]

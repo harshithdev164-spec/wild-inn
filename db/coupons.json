@@ -1,0 +1,12 @@
+[
+  { "code": "FIM@10",     "percent": 10, "owner": "Foodista Mysore", "active": true, "max_uses": null },
+  { "code": "CHM@10",     "percent": 10, "owner": "Cafe Hub Mysore", "active": true, "max_uses": null },
+  { "code": "MEP@10",     "percent": 10, "owner": "Megha Ponnamma",  "active": true, "max_uses": null },
+  { "code": "YUV@10",     "percent": 10, "owner": "Yuktavinay",      "active": true, "max_uses": null },
+  { "code": "PRE@10",     "percent": 10, "owner": "Preethi",         "active": true, "max_uses": null },
+  { "code": "UDA@10",     "percent": 10, "owner": "Uday",            "active": true, "max_uses": null },
+  { "code": "UDA@15",     "percent": 15, "owner": "Uday",            "active": true, "max_uses": null },
+  { "code": "WILDND@10",  "percent": 10, "owner": "Dharshan",        "active": true, "max_uses": null },
+  { "code": "WILDNDN@20", "percent": 20, "owner": "Dharshan",        "active": true, "max_uses": null },
+  { "code": "WILDNDF@25", "percent": 25, "owner": "Dharshan",        "active": true, "max_uses": null }
+]

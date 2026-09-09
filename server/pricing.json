@@ -1,0 +1,107 @@
+{
+  "kabini": {
+    "name": "Kabini",
+    "packages": {
+      "Resort Stay - Romantic Wild": {
+        "price": 4000000,
+        "unit": "Per Couple",
+        "duration": "2 Days • 1 Night"
+      },
+      "Kabini Wildlife Tour": {
+        "price": 1200000,
+        "unit": "Per Head",
+        "duration": "2 Days • 1 Night"
+      },
+      "Kabini Retreat": {
+        "price": 899900,
+        "unit": "Per Head",
+        "duration": "2 Days • 1 Night"
+      }
+    }
+  },
+  "bandipur": {
+    "name": "Bandipur",
+    "packages": {
+      "Romantic Retreat": {
+        "price": 1999900,
+        "unit": "Per Couple",
+        "duration": "2 Days • 1 Night"
+      },
+      "Bandipur Wildlife Tour": {
+        "price": 1200000,
+        "unit": "Per Head",
+        "duration": "2 Days • 1 Night"
+      },
+      "Bandipur Retreat": {
+        "price": 899900,
+        "unit": "Per Head",
+        "duration": "2 Days • 1 Night"
+      }
+    }
+  },
+  "masinagudi": {
+    "name": "Masinagudi & Mudumalai",
+    "packages": {
+      "Retreat": {
+        "price": 499900,
+        "unit": "Per Head",
+        "duration": "2 Days • 1 Night"
+      }
+    }
+  },
+  "bhadra": {
+    "name": "Bhadra Tiger Reserve",
+    "packages": {
+      "Retreat": {
+        "price": 749900,
+        "unit": "Per Head",
+        "duration": "2 Days • 1 Night"
+      },
+      "Wildlife Tour": {
+        "price": 899900,
+        "unit": "Per Head",
+        "duration": "2 Days • 1 Night"
+      }
+    }
+  },
+  "periyar": {
+    "name": "Periyar Tiger Reserve",
+    "packages": {
+      "Romantic Wild": {
+        "price": 1700000,
+        "unit": "Per Couple",
+        "duration": "2 Days • 1 Night"
+      },
+      "Retreat": {
+        "price": 749900,
+        "unit": "Per Head",
+        "duration": "2 Days • 1 Night"
+      }
+    }
+  },
+  "thekkady-gavi": {
+    "name": "Thekkady & Gavi",
+    "packages": {
+      "Romantic Wild": {
+        "price": 1700000,
+        "unit": "Per Couple",
+        "duration": "2 Days • 1 Night"
+      },
+      "Retreat": {
+        "price": 749900,
+        "unit": "Per Head",
+        "duration": "2 Days • 1 Night"
+      }
+    }
+  },
+  "parambikulam": {
+    "name": "Parambikulam Tiger Reserve",
+    "packages": {
+      "Retreat": {
+        "price": 1249900,
+        "unit": "Per Head",
+        "duration": "2 Days • 1 Night"
+      }
+    }
+  }
+}

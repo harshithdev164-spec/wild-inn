@@ -1,0 +1,21 @@
+# Host
+Host: https://www.wildinn.in
+
+# Crawl rules for all search engines
+User-agent: *
+Allow: /
+Allow: /about
+Allow: /experiences
+Allow: /gallery
+Allow: /contact
+
+# Disallow administrative, query-sensitive or debugging directories
+Disallow: /admin
+Disallow: /private/
+Disallow: /debug/
+Disallow: /api/
+Disallow: /tests/
+Disallow: /*?* # Block crawling of URLs with query parameters to prevent duplicate content indexing
+
+# Sitemap path
+Sitemap: https://www.wildinn.in/sitemap.xml
