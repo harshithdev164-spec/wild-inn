@@ -45,7 +45,9 @@ export async function quote({ slug, packageName, adults, children, coupon }) {
   const a = clampInt(adults, 1, 40);
   const ch = clampInt(children, 0, 40);
   const perHead = /per head/i.test(pkg.unit || '');
-  const qty = perHead ? a + ch : 1;
+  const perCouple = /per couple/i.test(pkg.unit || '');
+  // Per Head: one unit per traveller. Per Couple: one unit per 2 travellers (rounded up). Else: flat.
+  const qty = perHead ? a + ch : perCouple ? Math.max(1, Math.ceil((a + ch) / 2)) : 1;
   const base = pkg.price * qty;
 
   const c = await resolveCoupon(coupon);
@@ -59,6 +61,7 @@ export async function quote({ slug, packageName, adults, children, coupon }) {
     unit: pkg.unit,
     duration: pkg.duration,
     perHead,
+    perCouple,
     adults: a,
     children: ch,
     qty,

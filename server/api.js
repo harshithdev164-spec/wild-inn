@@ -18,9 +18,40 @@ function sendErr(res, err) {
   res.status(status).json({ error: err?.code || 'server_error', detail: err?.extra });
 }
 
+/**
+ * JSON body parser that works everywhere this app runs:
+ *  - Vercel serverless already parses the body into req.body (object/string/Buffer)
+ *    and drains the stream, so express.json() would see nothing.
+ *  - Vite dev middleware / serve.js pass a raw stream with no req.body.
+ */
+function jsonBody(req, _res, next) {
+  const m = (req.method || 'GET').toUpperCase();
+  if (m === 'GET' || m === 'HEAD') return next();
+
+  const b = req.body;
+  if (b && typeof b === 'object' && !Buffer.isBuffer(b)) return next(); // already parsed (Vercel)
+  if (typeof b === 'string' || Buffer.isBuffer(b)) {
+    try { req.body = b.length ? JSON.parse(b.toString()) : {}; } catch { req.body = {}; }
+    return next();
+  }
+
+  let raw = '';
+  let tooBig = false;
+  req.on('data', (c) => {
+    raw += c;
+    if (raw.length > 32768) { tooBig = true; req.destroy(); }
+  });
+  req.on('end', () => {
+    if (tooBig) { req.body = {}; return next(); }
+    try { req.body = raw ? JSON.parse(raw) : {}; } catch { req.body = {}; }
+    next();
+  });
+  req.on('error', () => { req.body = {}; next(); });
+}
+
 export function createApiApp() {
   const app = express();
-  app.use(express.json({ limit: '32kb' }));
+  app.use(jsonBody);
 
   // --- Reels -------------------------------------------------------------
   app.get('/api/reels', wrap(async (_req, res) => {

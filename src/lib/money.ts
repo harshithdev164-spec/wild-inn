@@ -17,6 +17,7 @@ export type QuoteBreakdown = {
   unit: string;
   duration?: string;
   perHead: boolean;
+  perCouple?: boolean;
   adults: number;
   children: number;
   qty: number;

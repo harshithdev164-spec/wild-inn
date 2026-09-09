@@ -54,7 +54,12 @@ export default function CheckoutDialog({ open, onClose, slug, destinationName, p
   const localQuote = useMemo<QuoteBreakdown>(() => {
     const unitPrice = paiseFromLabel(pkg?.price || '');
     const perHead = /per head/i.test(pkg?.unit || '');
-    const qty = perHead ? adults + children : 1;
+    const perCouple = /per couple/i.test(pkg?.unit || '');
+    const qty = perHead
+      ? adults + children
+      : perCouple
+      ? Math.max(1, Math.ceil((adults + children) / 2))
+      : 1;
     const base = unitPrice * qty;
     return {
       destination: destinationName,
@@ -62,6 +67,7 @@ export default function CheckoutDialog({ open, onClose, slug, destinationName, p
       unit: pkg?.unit || '',
       duration: pkg?.duration,
       perHead,
+      perCouple,
       adults,
       children,
       qty,
@@ -349,7 +355,7 @@ export default function CheckoutDialog({ open, onClose, slug, destinationName, p
                 {/* Summary */}
                 <div className="mt-5 space-y-1.5 rounded-xl border border-white/10 bg-white/[0.03] p-4 text-sm">
                   <Row
-                    label={`${formatINR(quote.unitPrice)}${quote.perHead ? ` × ${quote.qty}` : ''}`}
+                    label={`${formatINR(quote.unitPrice)}${quote.qty > 1 ? ` × ${quote.qty}${quote.perCouple ? ' couples' : ''}` : ''}`}
                     value={formatINR(quote.baseAmount)}
                     muted
                   />
