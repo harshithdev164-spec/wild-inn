@@ -7,8 +7,20 @@ import {
 
 import { DESTINATIONS, COMING_SOON } from '../data/destinationsData';
 import SEO from '../components/SEO';
+import { usePackagePrices } from '../hooks/usePackagePrices';
 
 export default function Tours() {
+  const { withLivePrice } = usePackagePrices();
+
+  const startingPrice = (dest: (typeof DESTINATIONS)[number]) => {
+    const rupees = dest.packages.map((p) => {
+      const live = withLivePrice(dest.id, p);
+      return Number(String(live.price).replace(/[^\d]/g, '')) || 0;
+    });
+    const min = rupees.length ? Math.min(...rupees.filter((n) => n > 0)) : 0;
+    return min.toLocaleString('en-IN');
+  };
+
   const breadcrumbSchema = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -133,7 +145,7 @@ export default function Tours() {
                 <div className="grid grid-cols-2 gap-6 py-6 border-y border-white/10">
                   <div>
                     <span className="block text-xs font-mono uppercase tracking-widest text-white/50 mb-1">Starting From</span>
-                    <span className="text-2xl font-sans text-white">₹{dest.id === 'masinagudi' ? '4,999' : '8,999'}</span>
+                    <span className="text-2xl font-sans text-white">₹{startingPrice(dest)}</span>
                   </div>
                   <div>
                     <span className="block text-xs font-mono uppercase tracking-widest text-white/50 mb-1">Available</span>

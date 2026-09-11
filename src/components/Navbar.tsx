@@ -70,8 +70,13 @@ export default function Navbar() {
                   alt="Wild Inn Tiger Logo"
                   className="w-9 h-9 rounded-full object-cover border border-white/10 transition-transform duration-300 group-hover:scale-110"
                 />
-                <span className="font-sans text-[17px] font-semibold tracking-wide text-white">
-                  Wild Inn
+                <span className="flex items-baseline gap-1.5">
+                  <span className="font-sans text-[17px] font-semibold tracking-wide text-white">
+                    Wild Inn
+                  </span>
+                  <span className="font-mono text-[9px] font-medium uppercase tracking-[0.2em] text-white/45">
+                    Expedition
+                  </span>
                 </span>
               </Link>
             </div>
