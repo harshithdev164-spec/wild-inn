@@ -1,7 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { X, Check, AlertCircle, Minus, Plus, Loader2, Tag, ShieldCheck } from 'lucide-react';
+import { X, Check, AlertCircle, Minus, Plus, Loader2, Tag, ShieldCheck, Play } from 'lucide-react';
 import { formatINR, type QuoteBreakdown } from '../lib/money';
+
+/** A short clip of what that price tier's stay actually looks like. */
+function stayVideoFor(priceLabel: string): { webm: string; mp4: string } | null {
+  const rupees = Number(String(priceLabel).replace(/[^\d]/g, '')) || 0;
+  if (rupees >= 35000 && rupees <= 45000) return { webm: '/video/stay-40k.webm', mp4: '/video/stay-40k.mp4' };
+  if (rupees >= 8000 && rupees <= 13000) return { webm: '/video/stay-9to12k.webm', mp4: '/video/stay-9to12k.mp4' };
+  return null;
+}
 
 interface Pkg {
   name: string;
@@ -83,6 +91,8 @@ export default function CheckoutDialog({ open, onClose, slug, destinationName, p
   // Prefer the API quote only when it matches the current selection.
   const quote =
     apiQuote && apiQuote.adults === adults && apiQuote.children === children ? apiQuote : localQuote;
+
+  const stayVideo = useMemo(() => stayVideoFor(pkg?.price || ''), [pkg]);
 
   // Reset when (re)opened.
   useEffect(() => {
@@ -302,6 +312,8 @@ export default function CheckoutDialog({ open, onClose, slug, destinationName, p
               </div>
             ) : (
               <div className="max-h-[64vh] overflow-y-auto px-5 py-5">
+                {stayVideo && <StayPreview key={stayVideo.webm} webm={stayVideo.webm} mp4={stayVideo.mp4} />}
+
                 {/* Customer fields */}
                 <div className="grid grid-cols-1 gap-3">
                   <Field label="Full name" value={form.name} onChange={(v) => setForm({ ...form, name: v })} placeholder="Your name" />
@@ -397,6 +409,56 @@ export default function CheckoutDialog({ open, onClose, slug, destinationName, p
 }
 
 /* ---------- small presentational helpers ---------- */
+
+function StayPreview({ webm, mp4 }: { key?: string; webm: string; mp4: string }) {
+  const [paused, setPaused] = useState(false);
+  const ref = useRef<HTMLVideoElement>(null);
+
+  const toggle = () => {
+    const v = ref.current;
+    if (!v) return;
+    if (v.paused) {
+      v.play().catch(() => {});
+      setPaused(false);
+    } else {
+      v.pause();
+      setPaused(true);
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      aria-label={paused ? 'Play preview' : 'Pause preview'}
+      className="group relative mx-auto mb-4 block aspect-[9/16] h-72 overflow-hidden rounded-xl bg-black sm:h-80"
+    >
+      <video
+        ref={ref}
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="metadata"
+        className="absolute inset-0 h-full w-full object-cover"
+      >
+        <source src={webm} type="video/webm" />
+        <source src={mp4} type="video/mp4" />
+      </video>
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+      <span className="absolute bottom-2.5 left-3 rounded-full bg-black/40 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider text-white/85 backdrop-blur-xs">
+        A glimpse of your stay
+      </span>
+      {paused && (
+        <span className="absolute inset-0 flex items-center justify-center bg-black/25">
+          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-black/50">
+            <Play className="h-4 w-4 translate-x-0.5 text-white" fill="currentColor" />
+          </span>
+        </span>
+      )}
+    </button>
+  );
+}
 
 function Field({
   label,
