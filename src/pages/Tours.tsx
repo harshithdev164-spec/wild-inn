@@ -40,12 +40,11 @@ export default function Tours() {
       <section className="relative w-full h-[95vh] sm:h-screen flex items-end justify-start overflow-hidden pt-28 pb-16 sm:pb-24 px-6 sm:px-12 md:px-16 lg:px-24">
         {/* Background Image */}
         <img
-          src="/img/pexels-best-safari-insights-2159031159-35751549.webp"
-          alt="Wild India Safari"
+          src="/img/hero-destinations.webp"
+          alt="Tiger in the wild, South India"
           loading="eager"
           fetchPriority="high"
-          className="absolute inset-0 w-full h-full object-cover scale-105 z-0"
-          referrerPolicy="no-referrer"
+          className="absolute inset-0 w-full h-full object-cover object-[68%_38%] scale-105 z-0"
         />
         
         {/* Elegant gradient overlay rising from bottom to protect text legibility, keeping center clear */}
