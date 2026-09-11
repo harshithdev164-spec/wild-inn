@@ -41,7 +41,7 @@ export const DESTINATIONS = [
     name: 'Bandipur',
     description: "Experience the magical forests of Bandipur National Park. Known for its thriving population of tigers, leopards, and large herds of Indian elephants.",
     heroImage: '/img/hero-bandipur.webp',
-    imagePosition: 'object-[center_32%]',
+    imagePosition: 'object-[68%_42%]',
     packages: [
       {
         name: 'Romantic Retreat',
