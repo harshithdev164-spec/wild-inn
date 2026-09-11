@@ -477,7 +477,7 @@ export default function Contact() {
               </h3>
               <div className="space-y-1">
                 <p className="text-white/70 font-sans font-light text-sm sm:text-base leading-relaxed hover:text-white transition-colors">
-                  <a href="tel:+918660774511">+91 8660774511</a>
+                  <a href="tel:+918525911685">+91 8525911685</a>
                 </p>
               </div>
             </div>

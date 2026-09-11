@@ -27,7 +27,7 @@ export default function Home() {
     ],
     'contactPoint': {
       '@type': 'ContactPoint',
-      'telephone': '+918660774511',
+      'telephone': '+918525911685',
       'contactType': 'customer service',
       'email': 'support@wildinn.com'
     }
@@ -120,7 +120,7 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row md:flex-col gap-3 shrink-0">
             <a
               id="hero-primary-cta"
-              href="https://wa.me/918660774511"
+              href="https://wa.me/918525911685"
               target="_blank"
               rel="noopener noreferrer"
               className="bg-white text-black hover:bg-neutral-100 active:scale-95 transition-all px-8 py-4 rounded-full text-xs sm:text-sm font-sans font-medium text-center  hover:scale-[1.02]"
@@ -172,7 +172,7 @@ export default function Home() {
               </p>
               <a
                 id="masai-mara-notify-cta"
-                href="https://wa.me/918660774511?text=I%27d%20like%20to%20be%20notified%20about%20Wild%20Inn%20Masai%20Mara"
+                href="https://wa.me/918525911685?text=I%27d%20like%20to%20be%20notified%20about%20Wild%20Inn%20Masai%20Mara"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-6 inline-flex items-center gap-2 bg-white text-black hover:bg-neutral-100 active:scale-95 transition-all px-7 py-3.5 rounded-full text-xs sm:text-sm font-sans font-medium w-fit hover:scale-[1.02]"
