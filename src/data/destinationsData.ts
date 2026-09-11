@@ -3,7 +3,7 @@ export const DESTINATIONS = [
     id: 'kabini',
     name: 'Kabini',
     description: "Kabini is one of South India's finest wildlife destinations known for tiger sightings, black panthers, elephants and riverside luxury lodges.",
-    heroImage: '/img/pexels-leon-aschemann-734730704-27834738.webp',
+    heroImage: '/img/hero-kabini.webp',
     imagePosition: 'object-[center_30%]',
     packages: [
       {
@@ -40,8 +40,8 @@ export const DESTINATIONS = [
     id: 'bandipur',
     name: 'Bandipur',
     description: "Experience the magical forests of Bandipur National Park. Known for its thriving population of tigers, leopards, and large herds of Indian elephants.",
-    heroImage: '/img/pexels-lorenzo-boldorini-134457203-29707600.webp',
-    imagePosition: 'object-center',
+    heroImage: '/img/hero-bandipur.webp',
+    imagePosition: 'object-[center_32%]',
     packages: [
       {
         name: 'Romantic Retreat',
@@ -100,7 +100,7 @@ export const DESTINATIONS = [
     id: 'bhadra',
     name: 'Bhadra Tiger Reserve',
     description: "Evergreen forests of the central Western Ghats around the Bhadra reservoir — tigers, leopards, and large herds of gaur and elephant across one of India's best-recovered habitats.",
-    heroImage: '/img/pexels-george-desipris-2055100.webp',
+    heroImage: '/img/hero-bhadra.webp',
     imagePosition: 'object-center',
     packages: [
       {
@@ -125,8 +125,8 @@ export const DESTINATIONS = [
     id: 'periyar',
     name: 'Periyar Tiger Reserve',
     description: "Kerala's most celebrated reserve, where elephant herds and gaur come down to Periyar Lake and boat safaris drift through drowned forest at first light.",
-    heroImage: '/img/pexels-stephen-leonardi-587681991-28614276.webp',
-    imagePosition: 'object-center',
+    heroImage: '/img/hero-periyar.webp',
+    imagePosition: 'object-[center_30%]',
     packages: [
       {
         name: 'Romantic Wild',
