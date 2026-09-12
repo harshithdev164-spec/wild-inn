@@ -51,7 +51,8 @@ type Step = 'form' | 'processing' | 'success' | 'error';
 export default function CheckoutDialog({ open, onClose, slug, destinationName, pkg }: CheckoutDialogProps) {
   const [form, setForm] = useState({ name: '', email: '', phone: '', checkIn: '', checkOut: '' });
   const [adults, setAdults] = useState(2);
-  const [children, setChildren] = useState(0);
+  const [childrenUnder10, setChildrenUnder10] = useState(0);
+  const [childrenOver10, setChildrenOver10] = useState(0);
   const [coupon, setCoupon] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState('');
   const [couponError, setCouponError] = useState('');
@@ -66,14 +67,23 @@ export default function CheckoutDialog({ open, onClose, slug, destinationName, p
   // (authoritative amount + coupon validation).
   const localQuote = useMemo<QuoteBreakdown>(() => {
     const unitPrice = paiseFromLabel(pkg?.price || '');
+    const halfPrice = Math.round(unitPrice / 2);
     const perHead = /per head/i.test(pkg?.unit || '');
     const perCouple = /per couple/i.test(pkg?.unit || '');
-    const qty = perHead
-      ? adults + children
-      : perCouple
-      ? Math.max(1, Math.ceil((adults + children) / 2))
-      : 1;
-    const base = unitPrice * qty;
+    const fullPriceCount = adults + childrenOver10;
+    const halfPriceCount = childrenUnder10;
+    let qty: number;
+    let base: number;
+    if (perHead) {
+      qty = fullPriceCount + halfPriceCount;
+      base = unitPrice * fullPriceCount + halfPrice * halfPriceCount;
+    } else if (perCouple) {
+      qty = Math.max(1, Math.ceil((fullPriceCount + halfPriceCount) / 2));
+      base = unitPrice * qty;
+    } else {
+      qty = 1;
+      base = unitPrice;
+    }
     return {
       destination: destinationName,
       packageName: pkg?.name || '',
@@ -82,20 +92,30 @@ export default function CheckoutDialog({ open, onClose, slug, destinationName, p
       perHead,
       perCouple,
       adults,
-      children,
+      childrenUnder10,
+      childrenOver10,
+      children: childrenUnder10 + childrenOver10,
       qty,
       unitPrice,
+      halfPrice,
+      fullPriceCount,
+      halfPriceCount,
       baseAmount: base,
       coupon: null,
       discountAmount: 0,
       amount: base,
       currency: 'INR',
     };
-  }, [pkg, adults, children, destinationName]);
+  }, [pkg, adults, childrenUnder10, childrenOver10, destinationName]);
 
   // Prefer the API quote only when it matches the current selection.
   const quote =
-    apiQuote && apiQuote.adults === adults && apiQuote.children === children ? apiQuote : localQuote;
+    apiQuote &&
+    apiQuote.adults === adults &&
+    apiQuote.childrenUnder10 === childrenUnder10 &&
+    apiQuote.childrenOver10 === childrenOver10
+      ? apiQuote
+      : localQuote;
 
   // Stay preview clips only exist for Kabini right now.
   const stayVideo = useMemo(() => (slug === 'kabini' ? stayVideoFor(pkg?.price || '') : null), [slug, pkg]);
@@ -105,7 +125,8 @@ export default function CheckoutDialog({ open, onClose, slug, destinationName, p
     if (!open) return;
     setForm({ name: '', email: '', phone: '', checkIn: '', checkOut: '' });
     setAdults(2);
-    setChildren(0);
+    setChildrenUnder10(0);
+    setChildrenOver10(0);
     setCoupon('');
     setAppliedCoupon('');
     setCouponError('');
@@ -127,7 +148,7 @@ export default function CheckoutDialog({ open, onClose, slug, destinationName, p
     fetch('/api/checkout/quote', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ slug, packageName: pkg.name, adults, children, coupon: appliedCoupon }),
+      body: JSON.stringify({ slug, packageName: pkg.name, adults, childrenUnder10, childrenOver10, coupon: appliedCoupon }),
     })
       .then((r) => r.json().then((j) => ({ ok: r.ok, j })))
       .then(({ ok, j }) => {
@@ -148,7 +169,7 @@ export default function CheckoutDialog({ open, onClose, slug, destinationName, p
           setAppliedCoupon('');
         }
       });
-  }, [open, pkg, slug, adults, children, appliedCoupon]);
+  }, [open, pkg, slug, adults, childrenUnder10, childrenOver10, appliedCoupon]);
 
   if (!pkg) return null;
 
@@ -185,7 +206,8 @@ export default function CheckoutDialog({ open, onClose, slug, destinationName, p
           slug,
           packageName: pkg.name,
           adults,
-          children,
+          childrenUnder10,
+          childrenOver10,
           coupon: appliedCoupon,
           customer: form,
         }),
@@ -355,9 +377,24 @@ export default function CheckoutDialog({ open, onClose, slug, destinationName, p
                 </div>
 
                 {/* Travellers */}
-                <div className="mt-4 grid grid-cols-2 gap-3">
+                <div className="mt-4 space-y-3">
                   <Counter label="Adults" value={adults} min={1} onChange={setAdults} />
-                  <Counter label="Children" value={children} min={0} onChange={setChildren} />
+                  <div className="grid grid-cols-2 gap-3">
+                    <Counter
+                      label="Children (< 10 yrs)"
+                      hint="50% price"
+                      value={childrenUnder10}
+                      min={0}
+                      onChange={setChildrenUnder10}
+                    />
+                    <Counter
+                      label="Children (10+ yrs)"
+                      hint="full price"
+                      value={childrenOver10}
+                      min={0}
+                      onChange={setChildrenOver10}
+                    />
+                  </div>
                 </div>
 
                 {/* Coupon */}
@@ -396,11 +433,26 @@ export default function CheckoutDialog({ open, onClose, slug, destinationName, p
 
                 {/* Summary */}
                 <div className="mt-5 space-y-1.5 rounded-xl border border-white/10 bg-white/[0.03] p-4 text-sm">
-                  <Row
-                    label={`${formatINR(quote.unitPrice)}${quote.qty > 1 ? ` × ${quote.qty}${quote.perCouple ? ' couples' : ''}` : ''}`}
-                    value={formatINR(quote.baseAmount)}
-                    muted
-                  />
+                  {quote.perHead && quote.halfPriceCount > 0 ? (
+                    <>
+                      <Row
+                        label={`${formatINR(quote.unitPrice)} × ${quote.fullPriceCount} (adult/10+)`}
+                        value={formatINR(quote.unitPrice * quote.fullPriceCount)}
+                        muted
+                      />
+                      <Row
+                        label={`${formatINR(quote.halfPrice)} × ${quote.halfPriceCount} (child <10, 50%)`}
+                        value={formatINR(quote.halfPrice * quote.halfPriceCount)}
+                        muted
+                      />
+                    </>
+                  ) : (
+                    <Row
+                      label={`${formatINR(quote.unitPrice)}${quote.qty > 1 ? ` × ${quote.qty}${quote.perCouple ? ' couples' : ''}` : ''}`}
+                      value={formatINR(quote.baseAmount)}
+                      muted
+                    />
+                  )}
                   {quote.coupon && quote.discountAmount > 0 && (
                     <Row
                       label={`Coupon ${quote.coupon.code} (−${quote.coupon.percent}%)`}
@@ -520,11 +572,26 @@ function Field({
   );
 }
 
-function Counter({ label, value, min, onChange }: { label: string; value: number; min: number; onChange: (n: number) => void }) {
+function Counter({
+  label,
+  hint,
+  value,
+  min,
+  onChange,
+}: {
+  label: string;
+  hint?: string;
+  value: number;
+  min: number;
+  onChange: (n: number) => void;
+}) {
   return (
-    <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3 py-2">
-      <span className="text-xs text-white/80">{label}</span>
-      <div className="flex items-center gap-2">
+    <div className="flex items-center justify-between gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+      <span className="min-w-0">
+        <span className="block truncate text-xs text-white/80">{label}</span>
+        {hint && <span className="block text-[10px] text-white/40">{hint}</span>}
+      </span>
+      <div className="flex shrink-0 items-center gap-2">
         <button
           type="button"
           onClick={() => onChange(Math.max(min, value - 1))}

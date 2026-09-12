@@ -19,9 +19,14 @@ export type QuoteBreakdown = {
   perHead: boolean;
   perCouple?: boolean;
   adults: number;
+  childrenUnder10: number;
+  childrenOver10: number;
   children: number;
   qty: number;
   unitPrice: number;
+  halfPrice: number;
+  fullPriceCount: number;
+  halfPriceCount: number;
   baseAmount: number;
   coupon: { code: string; percent: number } | null;
   discountAmount: number;

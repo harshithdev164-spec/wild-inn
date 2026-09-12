@@ -7,11 +7,15 @@ Package checkout uses **Razorpay**. Every package on `/experiences/:slug` has a
 
 The client **never** sends a price. On `POST /api/checkout/order` the server:
 
-1. Looks up the package in `server/pricing.json` (generated from `src/data/destinationsData.ts`
-   at build time by `scripts/build-pricing.ts` — run `npm run prebuild:pricing` after editing prices).
-2. `Per Head` packages → `price × (adults + children)`. `Per Couple` / anything else → flat price.
+1. Looks up the package price in the `packages` table (editable in `/admin`; falls back to
+   `server/pricing.json`, generated from `src/data/destinationsData.ts` by `scripts/build-pricing.ts`).
+2. Splits travellers into full-price heads (adults + children 10 and over) and half-price
+   heads (children under 10, charged 50%). `Per Head` packages charge per head at those rates;
+   `Per Couple` packages charge a flat rate per 2 travellers (`ceil(travellers / 2)`) — the age
+   discount doesn't apply to a couple's bucket price. Anything else is a flat price.
 3. Applies a coupon if valid: `discount = round(base × percent / 100)`.
-4. Creates a Razorpay order for the final amount and writes a `created` row in `orders`.
+4. Creates a Razorpay order for the final amount and writes a `created` row in `orders`
+   (adults, children, children_under10, check_in_date, check_out_date, …).
 
 `POST /api/checkout/verify` checks the Razorpay signature (HMAC-SHA256), flips the order to
 `paid`, and bumps `coupons.uses`.

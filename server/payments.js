@@ -37,18 +37,38 @@ async function resolveCoupon(rawCode) {
   return { code: c.code, percent: c.percent };
 }
 
-/** Compute a price quote. `couponCode` optional. */
-export async function quote({ slug, packageName, adults, children, coupon }) {
+/**
+ * Compute a price quote. `couponCode` optional.
+ * Children under 10 are charged 50% of the adult/package price; 10 and above pay full price.
+ */
+export async function quote({ slug, packageName, adults, childrenUnder10, childrenOver10, coupon }) {
   const pkg = await getPackage(slug, packageName);
   if (!pkg) throw httpError(404, 'package_not_found');
 
   const a = clampInt(adults, 1, 40);
-  const ch = clampInt(children, 0, 40);
+  const cu = clampInt(childrenUnder10, 0, 40);
+  const co = clampInt(childrenOver10, 0, 40);
   const perHead = /per head/i.test(pkg.unit || '');
   const perCouple = /per couple/i.test(pkg.unit || '');
-  // Per Head: one unit per traveller. Per Couple: one unit per 2 travellers (rounded up). Else: flat.
-  const qty = perHead ? a + ch : perCouple ? Math.max(1, Math.ceil((a + ch) / 2)) : 1;
-  const base = pkg.price * qty;
+
+  const fullPriceCount = a + co; // adults + children 10 and above
+  const halfPriceCount = cu; // children under 10
+  const halfPrice = Math.round(pkg.price / 2);
+
+  let qty;
+  let base;
+  if (perHead) {
+    // One full-price unit per adult/10+ child, one half-price unit per under-10 child.
+    qty = fullPriceCount + halfPriceCount;
+    base = pkg.price * fullPriceCount + halfPrice * halfPriceCount;
+  } else if (perCouple) {
+    // Couple packages are a flat per-2-travellers rate; the age discount doesn't apply to a bucket price.
+    qty = Math.max(1, Math.ceil((fullPriceCount + halfPriceCount) / 2));
+    base = pkg.price * qty;
+  } else {
+    qty = 1;
+    base = pkg.price;
+  }
 
   const c = await resolveCoupon(coupon);
   const discount = c ? Math.round((base * c.percent) / 100) : 0;
@@ -63,9 +83,14 @@ export async function quote({ slug, packageName, adults, children, coupon }) {
     perHead,
     perCouple,
     adults: a,
-    children: ch,
+    childrenUnder10: cu,
+    childrenOver10: co,
+    children: cu + co,
     qty,
     unitPrice: pkg.price,
+    halfPrice,
+    fullPriceCount,
+    halfPriceCount,
     baseAmount: base,
     coupon: c,
     discountAmount: discount,
@@ -113,11 +138,11 @@ export async function createOrder(input) {
   if (hasDb()) {
     await db()`
       insert into orders (
-        razorpay_order_id, slug, package_name, unit, adults, children,
+        razorpay_order_id, slug, package_name, unit, adults, children, children_under10,
         base_amount, coupon_code, discount_amount, amount, currency,
         customer_name, customer_email, customer_phone, check_in_date, check_out_date, status
       ) values (
-        ${order.id}, ${q.slug}, ${q.packageName}, ${q.unit}, ${q.adults}, ${q.children},
+        ${order.id}, ${q.slug}, ${q.packageName}, ${q.unit}, ${q.adults}, ${q.children}, ${q.childrenUnder10},
         ${q.baseAmount}, ${q.coupon?.code ?? null}, ${q.discountAmount}, ${q.amount}, ${q.currency},
         ${customer.name ?? null}, ${customer.email ?? null}, ${customer.phone ?? null},
         ${customer.checkIn || null}, ${customer.checkOut || null}, 'created'
@@ -136,6 +161,8 @@ export async function createOrder(input) {
       packageName: q.packageName,
       unit: q.unit,
       adults: q.adults,
+      childrenUnder10: q.childrenUnder10,
+      childrenOver10: q.childrenOver10,
       children: q.children,
       qty: q.qty,
       unitPrice: q.unitPrice,

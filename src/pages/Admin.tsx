@@ -28,6 +28,7 @@ type Order = {
   package_name: string;
   adults: number;
   children: number;
+  children_under10: number;
   base_amount: number;
   coupon_code: string | null;
   discount_amount: number;
@@ -411,7 +412,12 @@ export default function Admin() {
                         <span className="text-white/30">—</span>
                       )}
                     </Td>
-                    <Td>{o.adults}+{o.children}</Td>
+                    <Td className="whitespace-nowrap">
+                      <div>{o.adults}A{o.children > 0 ? ` + ${o.children}C` : ''}</div>
+                      {o.children_under10 > 0 && (
+                        <div className="text-[11px] text-white/40">{o.children_under10} under 10 (50%)</div>
+                      )}
+                    </Td>
                     <Td>{formatINR(o.base_amount)}</Td>
                     <Td className="font-mono text-[11px]">{o.coupon_code || '—'}</Td>
                     <Td>{o.discount_amount ? `− ${formatINR(o.discount_amount)}` : '—'}</Td>

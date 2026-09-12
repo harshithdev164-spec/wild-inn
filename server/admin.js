@@ -63,7 +63,7 @@ export async function listOrders(limit = 200) {
   if (!hasDb()) return { orders: [], summary: emptySummary() };
   const orders = await db()`
     select id, razorpay_order_id, razorpay_payment_id, slug, package_name, unit,
-           adults, children, base_amount, coupon_code, discount_amount, amount,
+           adults, children, children_under10, base_amount, coupon_code, discount_amount, amount,
            currency, customer_name, customer_email, customer_phone,
            to_char(check_in_date, 'YYYY-MM-DD') as check_in_date,
            to_char(check_out_date, 'YYYY-MM-DD') as check_out_date,

@@ -44,7 +44,8 @@ create table if not exists orders (
   package_name         text not null,
   unit                 text,                                 -- 'Per Head' | 'Per Couple' | ...
   adults               integer not null default 1,
-  children             integer not null default 0,
+  children             integer not null default 0,           -- total children (any age)
+  children_under10     integer not null default 0,           -- subset of `children` charged 50% (age < 10)
   base_amount          integer not null,                     -- paise, before discount
   coupon_code          text,
   discount_amount      integer not null default 0,           -- paise
@@ -69,6 +70,7 @@ begin
   end if;
 end $$;
 alter table orders add column if not exists check_out_date date;
+alter table orders add column if not exists children_under10 integer not null default 0;
 
 create index if not exists orders_recent_idx on orders (created_at desc);
 create index if not exists orders_coupon_idx on orders (coupon_code);
