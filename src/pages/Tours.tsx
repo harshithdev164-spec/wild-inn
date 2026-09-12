@@ -56,7 +56,7 @@ export default function Tours() {
           alt="Tiger in the wild, South India"
           loading="eager"
           fetchPriority="high"
-          className="absolute inset-0 w-full h-full object-cover object-[68%_38%] scale-105 z-0"
+          className="absolute inset-0 w-full h-full object-cover object-[70%_32%] sm:object-[68%_38%] scale-105 z-0"
         />
         
         {/* Elegant gradient overlay rising from bottom to protect text legibility, keeping center clear */}

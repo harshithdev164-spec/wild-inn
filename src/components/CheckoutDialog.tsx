@@ -92,7 +92,8 @@ export default function CheckoutDialog({ open, onClose, slug, destinationName, p
   const quote =
     apiQuote && apiQuote.adults === adults && apiQuote.children === children ? apiQuote : localQuote;
 
-  const stayVideo = useMemo(() => stayVideoFor(pkg?.price || ''), [pkg]);
+  // Stay preview clips only exist for Kabini right now.
+  const stayVideo = useMemo(() => (slug === 'kabini' ? stayVideoFor(pkg?.price || '') : null), [slug, pkg]);
 
   // Reset when (re)opened.
   useEffect(() => {
