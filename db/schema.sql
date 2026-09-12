@@ -53,11 +53,22 @@ create table if not exists orders (
   customer_name        text,
   customer_email       text,
   customer_phone       text,
-  travel_date          date,
+  check_in_date        date,
+  check_out_date       date,
   status               text not null default 'created',      -- created | paid | failed
   created_at           timestamptz not null default now(),
   paid_at              timestamptz
 );
+
+-- Migration for a DB created before check-in/check-out existed (safe to re-run).
+do $$
+begin
+  if exists (select 1 from information_schema.columns where table_name = 'orders' and column_name = 'travel_date')
+     and not exists (select 1 from information_schema.columns where table_name = 'orders' and column_name = 'check_in_date') then
+    alter table orders rename column travel_date to check_in_date;
+  end if;
+end $$;
+alter table orders add column if not exists check_out_date date;
 
 create index if not exists orders_recent_idx on orders (created_at desc);
 create index if not exists orders_coupon_idx on orders (coupon_code);

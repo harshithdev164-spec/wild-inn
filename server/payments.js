@@ -115,12 +115,12 @@ export async function createOrder(input) {
       insert into orders (
         razorpay_order_id, slug, package_name, unit, adults, children,
         base_amount, coupon_code, discount_amount, amount, currency,
-        customer_name, customer_email, customer_phone, travel_date, status
+        customer_name, customer_email, customer_phone, check_in_date, check_out_date, status
       ) values (
         ${order.id}, ${q.slug}, ${q.packageName}, ${q.unit}, ${q.adults}, ${q.children},
         ${q.baseAmount}, ${q.coupon?.code ?? null}, ${q.discountAmount}, ${q.amount}, ${q.currency},
         ${customer.name ?? null}, ${customer.email ?? null}, ${customer.phone ?? null},
-        ${customer.date || null}, 'created'
+        ${customer.checkIn || null}, ${customer.checkOut || null}, 'created'
       )
       on conflict (razorpay_order_id) do nothing
     `;

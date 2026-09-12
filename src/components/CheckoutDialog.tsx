@@ -40,11 +40,16 @@ function loadRazorpay(): Promise<boolean> {
 }
 
 const todayStr = () => new Date().toISOString().slice(0, 10);
+const addDays = (dateStr: string, n: number) => {
+  const d = new Date(dateStr + 'T00:00:00');
+  d.setDate(d.getDate() + n);
+  return d.toISOString().slice(0, 10);
+};
 
 type Step = 'form' | 'processing' | 'success' | 'error';
 
 export default function CheckoutDialog({ open, onClose, slug, destinationName, pkg }: CheckoutDialogProps) {
-  const [form, setForm] = useState({ name: '', email: '', phone: '', date: '' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', checkIn: '', checkOut: '' });
   const [adults, setAdults] = useState(2);
   const [children, setChildren] = useState(0);
   const [coupon, setCoupon] = useState('');
@@ -98,7 +103,7 @@ export default function CheckoutDialog({ open, onClose, slug, destinationName, p
   // Reset when (re)opened.
   useEffect(() => {
     if (!open) return;
-    setForm({ name: '', email: '', phone: '', date: '' });
+    setForm({ name: '', email: '', phone: '', checkIn: '', checkOut: '' });
     setAdults(2);
     setChildren(0);
     setCoupon('');
@@ -163,7 +168,9 @@ export default function CheckoutDialog({ open, onClose, slug, destinationName, p
     !!form.name.trim() &&
     /.+@.+\..+/.test(form.email) &&
     form.phone.trim().length >= 7 &&
-    !!form.date &&
+    !!form.checkIn &&
+    !!form.checkOut &&
+    form.checkOut > form.checkIn &&
     quote.amount > 0;
 
   const pay = async () => {
@@ -284,8 +291,9 @@ export default function CheckoutDialog({ open, onClose, slug, destinationName, p
                 </div>
                 <h4 className="mt-4 font-sans text-xl text-white">Payment received</h4>
                 <p className="mx-auto mt-2 max-w-xs text-xs leading-relaxed text-white/60">
-                  Thank you. Your booking for <span className="text-white/90">{pkg.name}</span> is confirmed — our team will
-                  reach out on <span className="text-white/90">{form.phone}</span> to finalise the details.
+                  Thank you. Your booking for <span className="text-white/90">{pkg.name}</span> is confirmed for{' '}
+                  <span className="text-white/90">{formatDateRange(form.checkIn, form.checkOut)}</span> — our team will reach
+                  out on <span className="text-white/90">{form.phone}</span> to finalise the details.
                 </p>
                 <p className="mt-3 font-mono text-[11px] text-white/40">Ref: {orderRef}</p>
                 <button
@@ -322,7 +330,28 @@ export default function CheckoutDialog({ open, onClose, slug, destinationName, p
                     <Field label="Email" type="email" value={form.email} onChange={(v) => setForm({ ...form, email: v })} placeholder="you@email.com" />
                     <Field label="Phone" type="tel" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} placeholder="+91…" />
                   </div>
-                  <Field label="Preferred date" type="date" value={form.date} min={todayStr()} onChange={(v) => setForm({ ...form, date: v })} />
+                  <div className="grid grid-cols-2 gap-3">
+                    <Field
+                      label="Check-in"
+                      type="date"
+                      value={form.checkIn}
+                      min={todayStr()}
+                      onChange={(v) => {
+                        const needsBump = !form.checkOut || form.checkOut <= v;
+                        setForm({ ...form, checkIn: v, checkOut: needsBump ? addDays(v, 1) : form.checkOut });
+                      }}
+                    />
+                    <Field
+                      label="Check-out"
+                      type="date"
+                      value={form.checkOut}
+                      min={form.checkIn ? addDays(form.checkIn, 1) : todayStr()}
+                      onChange={(v) => setForm({ ...form, checkOut: v })}
+                    />
+                  </div>
+                  {form.checkIn && form.checkOut && form.checkOut <= form.checkIn && (
+                    <p className="text-[11px] text-rose-400">Check-out must be after check-in.</p>
+                  )}
                 </div>
 
                 {/* Travellers */}
@@ -528,6 +557,13 @@ function Row({ label, value, bold, muted, accent }: { label: string; value: stri
 
 function paiseFromLabel(price: string): number {
   return Math.round(Number(String(price).replace(/[^\d.]/g, '')) * 100) || 0;
+}
+
+function formatDateRange(checkIn: string, checkOut: string): string {
+  const fmt = (s: string) =>
+    new Date(s + 'T00:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+  if (!checkIn || !checkOut) return '';
+  return `${fmt(checkIn)} – ${fmt(checkOut)}`;
 }
 
 function couponMsg(code: string): string {

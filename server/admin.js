@@ -64,7 +64,9 @@ export async function listOrders(limit = 200) {
   const orders = await db()`
     select id, razorpay_order_id, razorpay_payment_id, slug, package_name, unit,
            adults, children, base_amount, coupon_code, discount_amount, amount,
-           currency, customer_name, customer_email, customer_phone, travel_date,
+           currency, customer_name, customer_email, customer_phone,
+           to_char(check_in_date, 'YYYY-MM-DD') as check_in_date,
+           to_char(check_out_date, 'YYYY-MM-DD') as check_out_date,
            status, created_at, paid_at
     from orders
     order by created_at desc

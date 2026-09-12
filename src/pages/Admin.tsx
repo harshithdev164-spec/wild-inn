@@ -35,7 +35,8 @@ type Order = {
   customer_name: string | null;
   customer_phone: string | null;
   customer_email: string | null;
-  travel_date: string | null;
+  check_in_date: string | null;
+  check_out_date: string | null;
   status: string;
   created_at: string;
 };
@@ -382,10 +383,10 @@ export default function Admin() {
         <section className="mt-12">
           <h2 className="font-sans text-lg text-white/90">Orders</h2>
           <div className="mt-3 overflow-x-auto rounded-xl border border-white/10">
-            <table className="w-full min-w-[900px] text-left text-sm">
+            <table className="w-full min-w-[1000px] text-left text-sm">
               <thead className="bg-white/[0.03] text-[10px] uppercase tracking-wider text-white/40">
                 <tr>
-                  <Th>Date</Th><Th>Customer</Th><Th>Package</Th><Th>Pax</Th><Th>Base</Th><Th>Coupon</Th><Th>Discount</Th><Th>Paid</Th><Th>Status</Th>
+                  <Th>Date</Th><Th>Customer</Th><Th>Package</Th><Th>Stay</Th><Th>Pax</Th><Th>Base</Th><Th>Coupon</Th><Th>Discount</Th><Th>Paid</Th><Th>Status</Th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
@@ -398,7 +399,17 @@ export default function Admin() {
                     </Td>
                     <Td>
                       <div className="text-white/90">{o.package_name}</div>
-                      <div className="text-[11px] text-white/40 capitalize">{o.slug}{o.travel_date ? ` · ${o.travel_date}` : ''}</div>
+                      <div className="text-[11px] text-white/40 capitalize">{o.slug}</div>
+                    </Td>
+                    <Td className="whitespace-nowrap text-[12px]">
+                      {o.check_in_date ? (
+                        <>
+                          <div className="text-white/80">{formatShortDate(o.check_in_date)}</div>
+                          <div className="text-white/40">→ {o.check_out_date ? formatShortDate(o.check_out_date) : '—'}</div>
+                        </>
+                      ) : (
+                        <span className="text-white/30">—</span>
+                      )}
                     </Td>
                     <Td>{o.adults}+{o.children}</Td>
                     <Td>{formatINR(o.base_amount)}</Td>
@@ -432,6 +443,11 @@ function Tile({ label, value }: { label: string; value: string }) {
       <div className="mt-1 font-sans text-xl text-white">{value}</div>
     </div>
   );
+}
+function formatShortDate(iso: string): string {
+  const d = new Date(iso.length <= 10 ? `${iso}T00:00:00` : iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
 }
 function Th({ children }: { children?: any }) {
   return <th className="px-3 py-2.5 font-semibold">{children}</th>;
