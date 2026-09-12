@@ -50,9 +50,9 @@ type Step = 'form' | 'processing' | 'success' | 'error';
 
 export default function CheckoutDialog({ open, onClose, slug, destinationName, pkg }: CheckoutDialogProps) {
   const [form, setForm] = useState({ name: '', email: '', phone: '', checkIn: '', checkOut: '' });
+  // "Adults" here means anyone 10 years or older — full price. Under 10 is 50% off.
   const [adults, setAdults] = useState(2);
   const [childrenUnder10, setChildrenUnder10] = useState(0);
-  const [childrenOver10, setChildrenOver10] = useState(0);
   const [coupon, setCoupon] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState('');
   const [couponError, setCouponError] = useState('');
@@ -70,7 +70,7 @@ export default function CheckoutDialog({ open, onClose, slug, destinationName, p
     const halfPrice = Math.round(unitPrice / 2);
     const perHead = /per head/i.test(pkg?.unit || '');
     const perCouple = /per couple/i.test(pkg?.unit || '');
-    const fullPriceCount = adults + childrenOver10;
+    const fullPriceCount = adults;
     const halfPriceCount = childrenUnder10;
     let qty: number;
     let base: number;
@@ -93,8 +93,7 @@ export default function CheckoutDialog({ open, onClose, slug, destinationName, p
       perCouple,
       adults,
       childrenUnder10,
-      childrenOver10,
-      children: childrenUnder10 + childrenOver10,
+      children: childrenUnder10,
       qty,
       unitPrice,
       halfPrice,
@@ -106,16 +105,11 @@ export default function CheckoutDialog({ open, onClose, slug, destinationName, p
       amount: base,
       currency: 'INR',
     };
-  }, [pkg, adults, childrenUnder10, childrenOver10, destinationName]);
+  }, [pkg, adults, childrenUnder10, destinationName]);
 
   // Prefer the API quote only when it matches the current selection.
   const quote =
-    apiQuote &&
-    apiQuote.adults === adults &&
-    apiQuote.childrenUnder10 === childrenUnder10 &&
-    apiQuote.childrenOver10 === childrenOver10
-      ? apiQuote
-      : localQuote;
+    apiQuote && apiQuote.adults === adults && apiQuote.childrenUnder10 === childrenUnder10 ? apiQuote : localQuote;
 
   // Stay preview clips only exist for Kabini right now.
   const stayVideo = useMemo(() => (slug === 'kabini' ? stayVideoFor(pkg?.price || '') : null), [slug, pkg]);
@@ -126,7 +120,6 @@ export default function CheckoutDialog({ open, onClose, slug, destinationName, p
     setForm({ name: '', email: '', phone: '', checkIn: '', checkOut: '' });
     setAdults(2);
     setChildrenUnder10(0);
-    setChildrenOver10(0);
     setCoupon('');
     setAppliedCoupon('');
     setCouponError('');
@@ -148,7 +141,7 @@ export default function CheckoutDialog({ open, onClose, slug, destinationName, p
     fetch('/api/checkout/quote', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ slug, packageName: pkg.name, adults, childrenUnder10, childrenOver10, coupon: appliedCoupon }),
+      body: JSON.stringify({ slug, packageName: pkg.name, adults, childrenUnder10, coupon: appliedCoupon }),
     })
       .then((r) => r.json().then((j) => ({ ok: r.ok, j })))
       .then(({ ok, j }) => {
@@ -169,7 +162,7 @@ export default function CheckoutDialog({ open, onClose, slug, destinationName, p
           setAppliedCoupon('');
         }
       });
-  }, [open, pkg, slug, adults, childrenUnder10, childrenOver10, appliedCoupon]);
+  }, [open, pkg, slug, adults, childrenUnder10, appliedCoupon]);
 
   if (!pkg) return null;
 
@@ -207,7 +200,6 @@ export default function CheckoutDialog({ open, onClose, slug, destinationName, p
           packageName: pkg.name,
           adults,
           childrenUnder10,
-          childrenOver10,
           coupon: appliedCoupon,
           customer: form,
         }),
@@ -376,25 +368,16 @@ export default function CheckoutDialog({ open, onClose, slug, destinationName, p
                   )}
                 </div>
 
-                {/* Travellers */}
-                <div className="mt-4 space-y-3">
-                  <Counter label="Adults" value={adults} min={1} onChange={setAdults} />
-                  <div className="grid grid-cols-2 gap-3">
-                    <Counter
-                      label="Children (< 10 yrs)"
-                      hint="50% price"
-                      value={childrenUnder10}
-                      min={0}
-                      onChange={setChildrenUnder10}
-                    />
-                    <Counter
-                      label="Children (10+ yrs)"
-                      hint="full price"
-                      value={childrenOver10}
-                      min={0}
-                      onChange={setChildrenOver10}
-                    />
-                  </div>
+                {/* Travellers — priced purely by age, not "adult" vs "child" */}
+                <div className="mt-4 grid grid-cols-2 gap-3">
+                  <Counter label="Above 10 years" hint="full price" value={adults} min={1} onChange={setAdults} />
+                  <Counter
+                    label="Below 10 years"
+                    hint="50% price"
+                    value={childrenUnder10}
+                    min={0}
+                    onChange={setChildrenUnder10}
+                  />
                 </div>
 
                 {/* Coupon */}
@@ -436,12 +419,12 @@ export default function CheckoutDialog({ open, onClose, slug, destinationName, p
                   {quote.perHead && quote.halfPriceCount > 0 ? (
                     <>
                       <Row
-                        label={`${formatINR(quote.unitPrice)} × ${quote.fullPriceCount} (adult/10+)`}
+                        label={`${formatINR(quote.unitPrice)} × ${quote.fullPriceCount} (above 10 yrs)`}
                         value={formatINR(quote.unitPrice * quote.fullPriceCount)}
                         muted
                       />
                       <Row
-                        label={`${formatINR(quote.halfPrice)} × ${quote.halfPriceCount} (child <10, 50%)`}
+                        label={`${formatINR(quote.halfPrice)} × ${quote.halfPriceCount} (below 10 yrs, 50%)`}
                         value={formatINR(quote.halfPrice * quote.halfPriceCount)}
                         muted
                       />

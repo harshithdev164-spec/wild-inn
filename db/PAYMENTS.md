@@ -9,10 +9,10 @@ The client **never** sends a price. On `POST /api/checkout/order` the server:
 
 1. Looks up the package price in the `packages` table (editable in `/admin`; falls back to
    `server/pricing.json`, generated from `src/data/destinationsData.ts` by `scripts/build-pricing.ts`).
-2. Splits travellers into full-price heads (adults + children 10 and over) and half-price
-   heads (children under 10, charged 50%). `Per Head` packages charge per head at those rates;
-   `Per Couple` packages charge a flat rate per 2 travellers (`ceil(travellers / 2)`) — the age
-   discount doesn't apply to a couple's bucket price. Anything else is a flat price.
+2. Prices purely by age, not "adult" vs "child": travellers **10 years and over** pay full
+   price, travellers **under 10** pay 50%. `Per Head` packages charge per head at those two
+   rates; `Per Couple` packages charge a flat rate per 2 travellers (`ceil(travellers / 2)`) —
+   the age discount doesn't apply to a couple's bucket price. Anything else is a flat price.
 3. Applies a coupon if valid: `discount = round(base × percent / 100)`.
 4. Creates a Razorpay order for the final amount and writes a `created` row in `orders`
    (adults, children, children_under10, check_in_date, check_out_date, …).

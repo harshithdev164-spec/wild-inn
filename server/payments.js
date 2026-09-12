@@ -39,26 +39,26 @@ async function resolveCoupon(rawCode) {
 
 /**
  * Compute a price quote. `couponCode` optional.
- * Children under 10 are charged 50% of the adult/package price; 10 and above pay full price.
+ * Pricing is purely by age: 10 years and above pays full price ("adults"),
+ * under 10 pays 50% ("childrenUnder10"). There is no separate "child 10+" bucket.
  */
-export async function quote({ slug, packageName, adults, childrenUnder10, childrenOver10, coupon }) {
+export async function quote({ slug, packageName, adults, childrenUnder10, coupon }) {
   const pkg = await getPackage(slug, packageName);
   if (!pkg) throw httpError(404, 'package_not_found');
 
   const a = clampInt(adults, 1, 40);
   const cu = clampInt(childrenUnder10, 0, 40);
-  const co = clampInt(childrenOver10, 0, 40);
   const perHead = /per head/i.test(pkg.unit || '');
   const perCouple = /per couple/i.test(pkg.unit || '');
 
-  const fullPriceCount = a + co; // adults + children 10 and above
-  const halfPriceCount = cu; // children under 10
+  const fullPriceCount = a; // 10 years and above
+  const halfPriceCount = cu; // under 10
   const halfPrice = Math.round(pkg.price / 2);
 
   let qty;
   let base;
   if (perHead) {
-    // One full-price unit per adult/10+ child, one half-price unit per under-10 child.
+    // One full-price unit per person 10+, one half-price unit per person under 10.
     qty = fullPriceCount + halfPriceCount;
     base = pkg.price * fullPriceCount + halfPrice * halfPriceCount;
   } else if (perCouple) {
@@ -84,8 +84,7 @@ export async function quote({ slug, packageName, adults, childrenUnder10, childr
     perCouple,
     adults: a,
     childrenUnder10: cu,
-    childrenOver10: co,
-    children: cu + co,
+    children: cu,
     qty,
     unitPrice: pkg.price,
     halfPrice,
@@ -162,7 +161,6 @@ export async function createOrder(input) {
       unit: q.unit,
       adults: q.adults,
       childrenUnder10: q.childrenUnder10,
-      childrenOver10: q.childrenOver10,
       children: q.children,
       qty: q.qty,
       unitPrice: q.unitPrice,

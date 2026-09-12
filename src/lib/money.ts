@@ -20,7 +20,6 @@ export type QuoteBreakdown = {
   perCouple?: boolean;
   adults: number;
   childrenUnder10: number;
-  childrenOver10: number;
   children: number;
   qty: number;
   unitPrice: number;
